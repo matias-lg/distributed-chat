@@ -1,0 +1,3 @@
+- Arreglar que los nodos se comuniquen bien
+- Mapear el puerto al 80 (interno) dentro de un nodo
+- Hacer más fácil crear y eliminar nodos :C
