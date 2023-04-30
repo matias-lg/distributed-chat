@@ -35,19 +35,26 @@ puerto se mapeará al mismo puerto en el host. Luego si aparece
 ```
 INFO:     Uvicorn running on http://0.0.0.0:254 (Press CTRL+C to quit)
 ```
-bastará con acceder desde el navegador a `0.0.0.0:254` para ver información acerca del nodo.
+bastará con acceder desde el navegador a `0.0.0.0:254` para ver información acerca del nodo. O bien,
+ejecutar `curl 0.0.0.0:254` responde `{"message":"Tarea 1 de sistemas distribuidos","node_name":"first","node_addr":"172.18.209.249:825"}`
 Podemos ver los nodos que este conoce mediante un GET a `0.0.0.0:254/nodes`
 
-
 ### Crear otro nodo que conozca al primero
-Basta con ejecutar `create_node.sh` pasando la IP y puerto del primer nodo (nuevamente, esto lo podemos
-obtener con un GET a 0.0.0.0/254 en nuestro ejemplo) 
+Basta con ejecutar `create_node.sh` pasando la IP y puerto del primer nodo, que se muestra en consola o haciendo una petición como se explicó
+anteriormente.
+
 ```
-./create_node.sh anothernode 172.18.64.150 254
+./create_node.sh anothernode 172.18.209.249 825
 ```
 Al ejecutar el script de esta manera, se creará un segundo nodo que agregará a su lista de conocidos
-la IP y puerto entregado. Inmediatamente le informará de su existencia al primer nodo. Por lo tanto,
-si ahora revisamos la ruta `/nodes` en el primer nodo, debería aparecer el segundo!
+la IP y puerto entregado. Este nuevo nodo le informará de su existencia al primer nodo. Por lo tanto,
+si ahora revisamos la ruta `/nodes` en el primer nodo, debería aparecer el segundo:
+desde el host: `curl 0.0.0.0:254/nodes` o desde el shell de uno de los nodos, `curl 172.18.209.249:825`
+responde:
+```
+{"nodes":["172.18.209.249:825"]}
+```
+la IP del segundo en nuestra subnet aparece dentro de sus IPs conocidas. Si hacemos lo mismo para el segundo nodo se verá la IP y puerto del primero.
 
 De esta misma forma se pueden crear cuantos nodos se quiera. Si se entregan IPs y puertos conocidos
 se observará que los nodos de la red se empezarán a informar de la existencia de todos los que vayamos agregando.
