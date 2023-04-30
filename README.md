@@ -36,8 +36,8 @@ puerto se mapeará al mismo puerto en el host. Luego si aparece
 INFO:     Uvicorn running on http://0.0.0.0:254 (Press CTRL+C to quit)
 ```
 bastará con acceder desde el navegador a `0.0.0.0:254` para ver información acerca del nodo. O bien,
-ejecutar `curl 0.0.0.0:254` responde `{"message":"Tarea 1 de sistemas distribuidos","node_name":"first","node_addr":"172.18.209.249:825"}`
-Podemos ver los nodos que este conoce mediante un GET a `0.0.0.0:254/nodes`
+ejecutar `curl 0.0.0.0:254`. La respuesta es `{"message":"Tarea 1 de sistemas distribuidos","node_name":"first","node_addr":"172.18.209.249:825"}`.
+También podemos ver los nodos que este conoce mediante un GET a `0.0.0.0:254/nodes` desde el host. Desde el shell de otro nodo se debe usar su dirección dentro de la subnet, `172.18.209.249:825/nodes`. 
 
 ### Crear otro nodo que conozca al primero
 Basta con ejecutar `create_node.sh` pasando la IP y puerto del primer nodo, que se muestra en consola o haciendo una petición como se explicó
