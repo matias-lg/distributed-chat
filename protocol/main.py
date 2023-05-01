@@ -3,7 +3,7 @@ import random
 from fastapi import FastAPI
 from fastapi_utils.tasks import repeat_every
 from pydantic import BaseModel
-from .local_node import LocalNode
+from .local_set import LocalSet
 from .utils import print_receive_message, inform_node
 
 
@@ -13,7 +13,7 @@ class NodeMsg(BaseModel):
 
 
 # set que contiene las direcciones de los nodos conocidos
-local_nodes = LocalNode()
+local_nodes = LocalSet()
 
 # Leer las variables de entorno que contienen al nodo conocido
 known_node_ip = os.environ.get("KNOWN_NODE_IP")

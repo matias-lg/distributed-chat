@@ -1,9 +1,10 @@
-# Inicialmente se usó un set() para guardar las IPs conocidas
-# Pero al usar varios nodos ocurren problemas de concurrencia, por lo
-# que se necesita usar una sección crítica
+#Inicialmente se usó un set() para almacenar los nodos locales, pero cuando hay
+#muchos nodos comienzan a surgir problemas de concurrencia, por lo que ahora se
+#usa una sección crítica para acceder al set. Todo esto ocurre porque los endpoints
+#de FastAPI se corren de forma asíncrona.
 import asyncio
 
-class LocalNode:
+class LocalSet:
     def __init__(self):
         self.local_nodes: set[str] = set()
         self.lock = asyncio.Lock()
