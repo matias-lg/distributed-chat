@@ -16,12 +16,12 @@ class NodeMsg(BaseModel):
 local_nodes = LocalSet()
 
 # Leer las variables de entorno que contienen al nodo conocido
-known_node_ip = os.environ.get("KNOWN_NODE_IP")
-known_node_port = os.environ.get("KNOWN_NODE_PORT")
-this_node_name = os.environ.get("NODE_NAME")
-this_node_ip = os.environ.get("NODE_IP")
-this_node_port = os.environ.get("NODE_PORT")
-this_node_addr = os.environ.get("NODE_ADDR") or "IGNORE"
+KNOWN_NODE_IP = os.environ.get("KNOWN_NODE_IP")
+KNOWN_NODE_PORT = os.environ.get("KNOWN_NODE_PORT")
+THIS_NODE_NAME = os.environ.get("NODE_NAME")
+THIS_NODE_IP = os.environ.get("NODE_IP")
+THIS_NODE_PORT = os.environ.get("NODE_PORT")
+THIS_NODE_ADDR = os.environ.get("NODE_ADDR") or "IGNORE"
 
 app = FastAPI()
 
@@ -29,8 +29,8 @@ app = FastAPI()
 @app.get("/")
 def root():
     return {"message": f"Tarea 1 de sistemas distribuidos",
-            "node_name": this_node_name,
-            "node_addr": this_node_addr
+            "node_name": THIS_NODE_NAME,
+            "node_addr": THIS_NODE_ADDR
             }
 
 
@@ -45,7 +45,7 @@ async def add_node(node_msg: NodeMsg):
     sender = node_msg.sender
     if await local_nodes.contains(new_address):
         return {"message": "El nodo ya es conocido"}
-    if new_address == this_node_addr:
+    if new_address == THIS_NODE_ADDR:
         return {"message": "No me envíes a mi mismo"}
 
     print_receive_message(sender, new_address)
@@ -53,23 +53,23 @@ async def add_node(node_msg: NodeMsg):
     # Avisarle a nuestros conocidos de la existencia del nuevo nodo
     for node in await local_nodes.get_all_nodes():
         if node not in [sender, new_address]:
-            inform_node(node, new_address, this_node_addr)
+            inform_node(node, new_address, THIS_NODE_ADDR)
     # Avisarle de mi existencia al nuevo nodo, si es que él no se envió a si mismo
     # (eso significa que ya me conoce)
     if sender != new_address:
-        inform_node(new_address, this_node_addr, this_node_addr)
+        inform_node(new_address, THIS_NODE_ADDR, THIS_NODE_ADDR)
     return {"message": "Nodo agregado exitosamente"}
 
 
 @app.on_event("startup")
 async def initial_setup():
     # El primer nodo se inicia sin nodos conocidos
-    if known_node_ip != "IGNORE" and known_node_port != "IGNORE":
+    if KNOWN_NODE_IP != "IGNORE" and KNOWN_NODE_PORT != "IGNORE":
         # Se agrega a los nodos conocidos y le avisamos de nuestra existencia
-        known_address: str = f"{known_node_ip}:{known_node_port}"
+        known_address: str = f"{KNOWN_NODE_IP}:{KNOWN_NODE_PORT}"
         await local_nodes.add(known_address)
-        inform_node(known_address, this_node_addr, this_node_addr)
-    print(f"{this_node_name} iniciado con dirección {this_node_addr}")
+        inform_node(known_address, THIS_NODE_ADDR, THIS_NODE_ADDR)
+    print(f"{THIS_NODE_NAME} iniciado con dirección {THIS_NODE_ADDR}")
 
 
 @app.on_event("startup")
@@ -80,7 +80,7 @@ async def randomnly_inform():
     if len(all_nodes) < 2:
         return
     random_dest_node = random.choice(all_nodes)
-    random_new_node = random.choice(all_nodes + [this_node_addr])
+    random_new_node = random.choice(all_nodes + [THIS_NODE_ADDR])
     while random_new_node == random_dest_node:
-        random_new_node = random.choice(all_nodes + [this_node_addr])
-    inform_node(random_dest_node, random_new_node, this_node_addr)
+        random_new_node = random.choice(all_nodes + [THIS_NODE_ADDR])
+    inform_node(random_dest_node, random_new_node, THIS_NODE_ADDR)
