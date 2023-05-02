@@ -19,7 +19,13 @@ NODE_ADDR=$rand_ip:$rand_port"
 
 echo "$tmpenv" > .env
 
-docker compose --project-name $node_name up app
+# Check if docker compose is installed else use docker-compose
+docker compose >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+  docker compose --project-name $node_name up app
+else
+  docker-compose --project-name $node_name up app
+fi
 
 if [ $? -eq 0 ]; then
   echo "Se creó el nuevo nodo"
