@@ -6,7 +6,6 @@ known_port=${3:-IGNORE}
 # Se genera una IP y puerto aleatorio para el nuevo nodo
 rand_ip=$(awk 'BEGIN{srand(); printf "172.18.%d.%d\n", int(254*rand()), int(254*rand())}')
 rand_port=$(awk 'BEGIN{srand(); printf "%d\n", int(1000*rand())}')
-
 echo "Creando nodo con IP: $rand_ip y puerto: $rand_port"
 
 # variables de entorno temporales para crear el nuevo nodo
@@ -16,16 +15,19 @@ NODE_IP=$rand_ip
 KNOWN_NODE_IP=$known_ip
 KNOWN_NODE_PORT=$known_port
 NODE_ADDR=$rand_ip:$rand_port"
-
 echo "$tmpenv" > .env
 
-# Check if docker compose is installed else use docker-compose
+
+
+# Tratar de usar docker compose (más reciente)
+compose_command="docker-compose"
 docker compose >/dev/null 2>&1
 if [ $? -eq 0 ]; then
-  docker compose --project-name $node_name up app
-else
-  docker-compose --project-name $node_name up app
+  compose_command="docker compose"
 fi
+
+# Crear el nuevo nodo
+$compose_command --project-name $node_name up app
 
 if [ $? -eq 0 ]; then
   echo "Se creó el nuevo nodo"
