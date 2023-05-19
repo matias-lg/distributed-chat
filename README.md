@@ -83,7 +83,7 @@ firstnode | 172.18.137.191:556 me informó de su existencia
 firstnode | INFO:     172.18.137.191:57118 - "POST /nodes HTTP/1.1" 200 OK
 ```
 El segundo nodo recién creado le informa al primero de su existencia a través de un POST request a la ruta `/nodes` del primero.
-De esta forma, si ahora hacemos un GET a `\nodes` del primer nodo. (desde el host a 0.0.0.0:840/nodes, desde el terminal del container del segundo nodo a 172.18.106.56:840/nodes),
+De esta forma, si ahora hacemos un GET a `/nodes` del primer nodo. (desde el host a 0.0.0.0:840/nodes, desde el terminal del container del segundo nodo a 172.18.106.56:840/nodes),
 el primer nodo responde:
 ```json
 {"nodes":["172.18.137.191:556"]}
