@@ -1,5 +1,9 @@
 import requests
 import time
+from .classes import ApiMessage
+
+SLEEP_TIME = 5
+NTRIES = 3
 
 def print_inform_message(dest_addr: str, new_addr: str, this_node_addr: str):
     if new_addr == this_node_addr:
@@ -15,9 +19,7 @@ def print_receive_message(sender: str, new_addr: str):
 
 # Los nodos se comunican a través de un POST a /nodes
 def inform_node(dest_addr: str, new_addr: str, this_node_addr: str):
-    sleep_time = 5
-    ntries = 3
-    for _ in range(ntries):
+    for _ in range(NTRIES):
         try:
             requests.post(f"http://{dest_addr}/nodes",
                           json={"new_node_address": new_addr,
@@ -26,5 +28,15 @@ def inform_node(dest_addr: str, new_addr: str, this_node_addr: str):
             print_inform_message(dest_addr, new_addr, this_node_addr)
             return
         except requests.exceptions.ConnectionError:
-            time.sleep(sleep_time)
-    print(f"No se pudo conectar con {dest_addr} luego de {ntries} intentos")
+            time.sleep(SLEEP_TIME)
+    print(f"No se pudo conectar con {dest_addr} luego de {NTRIES} intentos")
+
+def propagate_message(dest_addr: str, message: ApiMessage):
+    for _ in range(NTRIES):
+        try:
+            requests.post(f"http://{dest_addr}/messages",
+                          json=message.dict()
+                          )
+            return
+        except requests.exceptions.ConnectionError:
+            time.sleep(SLEEP_TIME)
