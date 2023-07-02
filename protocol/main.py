@@ -75,7 +75,7 @@ async def initial_setup():
 
 
 @app.on_event("startup")
-@repeat_every(seconds=30)
+@repeat_every(seconds=5)
 # Cada 30 segundos informaremos a un nodo aleatorio de la existencia de otro nodo aleatorio, para evitar que por un error en la red un nodo quede aislado
 async def randomnly_inform():
     all_nodes = await local_nodes.get_all_elements()

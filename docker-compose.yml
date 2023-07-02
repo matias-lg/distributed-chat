@@ -19,7 +19,7 @@ services:
       - "${NODE_PORT}:${NODE_PORT}"
     volumes:
       - ./protocol:/code/protocol
-    command: "uvicorn protocol.main:app --host 0.0.0.0 --port ${NODE_PORT}"
+    command: "uvicorn protocol.main:app --host 0.0.0.0 --port ${NODE_PORT} --reload --workers 8"
     networks:
       tarea1net:
         ipv4_address: ${NODE_IP}
