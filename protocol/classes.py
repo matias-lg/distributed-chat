@@ -4,11 +4,16 @@ class NodeInfo(BaseModel):
     sender: str = ""
     new_node_address: str = ""
 
-class chatMessage:
+class SetMessage:
     def __init__(self, content: str, sender: str, timestamp: float):
         self.content = content
         self.sender = sender
         self.timestamp = timestamp
 
-class ApiMessage(BaseModel):
+class ApiSetMessage(BaseModel):
+    content: str
+    sender: str
+    timestamp: float
+
+class ApiSimpleMessage(BaseModel):
     message: str

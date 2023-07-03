@@ -1,6 +1,6 @@
 import requests
 import time
-from .classes import ApiMessage
+from .classes import SetMessage
 
 SLEEP_TIME = 5
 NTRIES = 3
@@ -31,11 +31,12 @@ def inform_node(dest_addr: str, new_addr: str, this_node_addr: str):
             time.sleep(SLEEP_TIME)
     print(f"No se pudo conectar con {dest_addr} luego de {NTRIES} intentos")
 
-def propagate_message(dest_addr: str, message: ApiMessage):
+def propagate_message(dest_addr: str, message: SetMessage):
     for _ in range(NTRIES):
+        print(f"####### ENVIANDO MENSAJE A {dest_addr} ##################")
         try:
-            requests.post(f"http://{dest_addr}/messages",
-                          json=message.dict()
+            requests.post(f"http://{dest_addr}/sync_messages",
+                          json = {"content": message.content, "sender": message.sender, "timestamp": message.timestamp}
                           )
             return
         except requests.exceptions.ConnectionError:
