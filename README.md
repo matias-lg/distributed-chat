@@ -1,4 +1,4 @@
-# Sistemas Distribuidos: Tarea 1
+# Sistemas Distribuidos: Tarea 3
 
 Esta tarea consiste de un sistema distribuido donde los nodos que ejecutan el protocolo
 se informan de la existencia de otros nodos a través de una API REST por medio de HTTP.
@@ -18,10 +18,10 @@ docker build -t distnode .
 
 ### Crear subnet
 Todos los nodos se comunican dentro de una network de Docker, para poder levantar los nodos con sus
-propias IP es necesario crear la network "tarea1net" con la subnet `172.18.0.0/16`:
+propias IP es necesario crear la network "tarea2net" con la subnet `172.18.0.0/16`:
 
 ```bash
-docker network create --subnet=172.18.0.0/16 tarea1net
+docker network create --subnet=172.18.0.0/16 tarea2net
 ```
 
 
@@ -29,7 +29,7 @@ docker network create --subnet=172.18.0.0/16 tarea1net
 Para crear nodos existen dos formas:
 `./create_node.sh <nombre_nodo>` y `./create_node.sh <nombre_nodo> <ip_conocida> <puerto_conocido>`
 La primera forma creará un nodo que no conocerá a ningún otro. La segunda forma crea un nodo que conocerá al nodo
-con dirección `$<ip_conocida>:$<puerto_conocido>` dentro de la red tarea1net.
+con dirección `$<ip_conocida>:$<puerto_conocido>` dentro de la red tarea2net.
 
 ### Crear el primer nodo
 Como es el primer nodo, no tendrá nodos conocidos:
@@ -37,7 +37,7 @@ Como es el primer nodo, no tendrá nodos conocidos:
 ./create_node.sh primernodo
 ```
 
-El script `create_node.sh` genera una IP aleatoria dentro del rango posible de la red tarea1net,
+El script `create_node.sh` genera una IP aleatoria dentro del rango posible de la red tarea2net,
 cuando el nodo recién creado ejecute el protocolo, mostrará en la consola su IP y puerto, este
 puerto se mapeará al mismo puerto en el host. Luego si aparece
 
@@ -80,10 +80,10 @@ Creando nodo con IP: 172.18.137.191 y puerto: 556
 y observamos que en la consola del primer nodo se muestra:
 ```
 firstnode | 172.18.137.191:556 me informó de su existencia
-firstnode | INFO:     172.18.137.191:57118 - "POST /nodes HTTP/1.1" 200 OK
+firstnode | INFO: 172.18.137.191:57118 - "POST /nodes HTTP/1.1" 200 OK
 ```
 El segundo nodo recién creado le informa al primero de su existencia a través de un POST request a la ruta `/nodes` del primero.
-De esta forma, si ahora hacemos un GET a `/nodes` del primer nodo. (desde el host a 0.0.0.0:840/nodes, desde el terminal del container del segundo nodo a 172.18.106.56:840/nodes),
+De esta forma, si ahora hacemos un GET a `\nodes` del primer nodo. (desde el host a 0.0.0.0:840/nodes, desde el terminal del container del segundo nodo a 172.18.106.56:840/nodes),
 el primer nodo responde:
 ```json
 {"nodes":["172.18.137.191:556"]}
@@ -91,3 +91,16 @@ el primer nodo responde:
 ¡Tiene en memoria la dirección del segundo nodo! Si hacemos lo mismo para el segundo nodo se debería mostrar la dirección del primero. De esta forma se pueden ir agregando más
 nodos, los que se irán informando sobre la existencia de los demás. Por ejemplo, si creamos un tercer nodo que conozca la IP del segundo, el tercero le informará al segundo de su existencia,
 más adelante el segundo nodo le informará al primero la existencia del tercero.
+NOTA: Cada 5 segundos, cada nodo le informa de la existencia de un nodo aleatorio en su lista de conocidos a otro (también elegido al azar dentro de sus conocidos).
+
+## Chat global de mensajes
+Se pueden enviar mensajes entre los nodos, estos mensajes se mantienen en un chat global el cual cada nodo mantiene una copia. Para mantener el orden de los mensajes, cada
+nodo se sincroniza con un servidor NTP para obtener un timestamp de los mensajes. De esta forma, todos los nodos guardan los mensajes en el mismo orden.
+
+### Publicar un mensaje en el chat global
+Para publicar un mensaje en el chat global, se debe hacer un POST request a la ruta `/messages` de algún nodo.
+Por ejemplo, desde el host:
+```bash
+curl -X POST -H "Content-type: application/json" -d '{"message":"Hola a todos, este es el primer mensaje"}' 0.0.0.0:840/messages
+```
+Después de un tiempo, el mensaje aparecerá en la lista de mensajes de todos los nodos, se puede verificar haciendo un GET a la ruta `/messages` de cada nodo.

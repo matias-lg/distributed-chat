@@ -1,7 +1,7 @@
 version: "3.9"
 
 networks:
-  tarea1net:
+  tarea2net:
     external: true
 
 services:
@@ -21,7 +21,7 @@ services:
       - ./protocol:/code/protocol
     command: "uvicorn protocol.main:app --host 0.0.0.0 --port ${NODE_PORT}"
     networks:
-      tarea1net:
+      tarea2net:
         ipv4_address: ${NODE_IP}
 volumes:
   protocol:
